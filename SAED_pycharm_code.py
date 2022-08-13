@@ -8,12 +8,12 @@ import datetime
 import seaborn as sns
 from matplotlib import pyplot as plt
 import math
+import random
 
 # ask to chose file from your PC.
 root = tkinter.Tk()
 root.withdraw()
 file_path = filedialog.askopenfilename()
-#file_path = "/home/hamza/Downloads/DataSets/archive/Features data set.csv"
 '''############################################################################################'''
 #                                             Load File and Check Format
 '''############################################################################################'''
@@ -129,6 +129,8 @@ try:
     num_plots_y = math.ceil(len(numeric_data.columns)/num_plots_x) # No. of plots in every column.
     # distribution plot for all numerical columns.
     figure, axis = plt.subplots(num_plots_y,num_plots_x)
+    figure.set_size_inches(10, 8)
+    figure.suptitle('Features Distplots')
     count = 0
     for i in range(num_plots_y):
         for j in range(num_plots_x):
@@ -137,37 +139,47 @@ try:
                 continue
             sns.distplot(numeric_data[numeric_data.columns[count]],ax = axis[i,j])
             count = count + 1
-    plt.show()
+    if len(numeric_data[numeric_data.columns] != 0):
+        plt.show()
+except:
+    plt.close()
+try:
     # box plot plot for all numerical columns.
     figure, axis = plt.subplots(num_plots_y,num_plots_x)
-    colors = ['b','g','r']
+    figure.set_size_inches(10, 8)
+    figure.suptitle('Features Boxplots')
     count = 0
     for i in range(num_plots_y):
         for j in range(num_plots_x):
+            r = random.random()
+            b = random.random()
+            g = random.random()
             if count >= numeric_data.shape[1]:
                 axis[i,j].set_visible(False)
                 continue
-            sns.boxplot(data = numeric_data[numeric_data.columns[count]],ax = axis[i,j], color = colors[i])
+            sns.boxplot(data = numeric_data[numeric_data.columns[count]],ax = axis[i,j], color = (r,g,b))
             axis[i,j].set_title(numeric_data.columns[count])
             count = count + 1
     plt.show()
 except:
     plt.close()
-    pass
 '''
                                        Bivariate Analysis
 
 '''
 # Show Correlation Matrix.
-plt.figure(figsize = (len(numeric_data.columns) * 10,len(numeric_data.columns) * 10))
+plt.title('Correlation Matrix')
 sns.heatmap(numeric_data.corr(), annot = True, fmt = '.2f', cmap = 'Reds')
 plt.show()
 # pair plotting.
 sns.pairplot(numeric_data[numeric_data.columns], kind = 'reg')
+plt.title('Features Pairplots')
 plt.tight_layout()
 plt.show()
 '''                                      Numeric-Categorical Analysis                               '''
+print('some categorical analysis: ')
+print("--------------------------------")
 for i in range(len(categorical_data.columns)):
     for j in range(len(numeric_data.columns)):
-        print(df.groupby(categorical_data.columns[i])[numeric_data.columns[j]].mean())
+        print(df.groupby(categorical_data.columns[i])[numeric_data.columns[j]].mean().sort_values(ascending = False))
         print("--------------------------------")
